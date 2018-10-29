@@ -52,7 +52,7 @@ public class MainView implements GameContract.View {
         clearScreen();
         printHeader();
 
-        Thread.sleep(2500);
+//        Thread.sleep(2500);
         presenter = new GamePresenter(this);
         showMainMenu();
 

@@ -13,7 +13,7 @@ public interface GameContract {
         void changeDirectionToBottom();
         void startGame();
         void stopGame();
-        void setSpeed(int speed);
+        void setSpeed(long speed);
     }
 
     interface View {
