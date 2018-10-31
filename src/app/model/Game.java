@@ -9,21 +9,16 @@ import static app.model.GameConfig.*;
 
 public class Game {
 
-
-
     private ArrayList<Observer> observers = new ArrayList<>();
 
     private Snake snake;
     private Prize prize;
     private int score = 0;
 
-//    private boolean wrapSnakeOnBoundaries = false;
+    private boolean directionChangeOccurred = false;
     private boolean isGameOn = false;
     private Timer gameTimer;
 
-    /*public void setWrapSnakeOnBoundaries(boolean wrapSnakeOnBoundaries) {
-        this.wrapSnakeOnBoundaries = wrapSnakeOnBoundaries;
-    }*/
 
     public void addObserver(Observer observer) {
         if (!observers.contains(observer)) {
@@ -74,7 +69,10 @@ public class Game {
 
 
     public void changeSnakeDirectionTo(Direction direction) {
-        snake.changeDirection(direction);
+        if (!directionChangeOccurred) {
+            snake.changeDirection(direction);
+            directionChangeOccurred = true;
+        }
     }
 
     public void startGame() {
@@ -86,6 +84,7 @@ public class Game {
             gameTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
+                    directionChangeOccurred = false;
                     snake.move();
                     if (GameConfig.getInstance().isSnakeWrapsOnBoundaries()) {
                         wrapSnake();
