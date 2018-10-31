@@ -14,7 +14,6 @@ import com.googlecode.lanterna.terminal.Terminal;
 
 import java.io.IOException;
 
-@SuppressWarnings("ALL")
 public class MainView {
 
     private final int COLUMNS = GameConfig.RIGHT_BOUNDARY;

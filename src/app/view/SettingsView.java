@@ -46,7 +46,7 @@ public class SettingsView implements SettingsContract.View {
         initColors();
 
         while (!exitRequested)
-        showMainMenu();
+            showMainMenu();
     }
 
     private void initColors() {

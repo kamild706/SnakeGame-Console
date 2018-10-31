@@ -14,7 +14,7 @@ import com.googlecode.lanterna.screen.Screen;
 import java.io.IOException;
 import java.util.LinkedList;
 
-public class GameView  implements GameContract.View {
+public class GameView implements GameContract.View {
 
     private final int COLUMNS = GameConfig.RIGHT_BOUNDARY;
     private final int ROWS = GameConfig.BOTTOM_BOUNDARY;
@@ -94,7 +94,7 @@ public class GameView  implements GameContract.View {
     @Override
     public void onGameOver() {
         int leftMargin = 23;
-        int topMargin= 3;
+        int topMargin = 3;
         print(leftMargin, topMargin++, "_     _  _____  __   _ _____ _______ _______");
         print(leftMargin, topMargin++, " |____/  |     | | \\  |   |   |______ |     ");
         print(leftMargin, topMargin++, " |    \\_ |_____| |  \\_| __|__ |______ |_____");
