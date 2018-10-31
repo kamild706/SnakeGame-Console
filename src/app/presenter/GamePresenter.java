@@ -14,8 +14,6 @@ public class GamePresenter implements GameContract.Presenter, Observer {
         this.view = view;
         game = new Game();
         game.addObserver(this);
-        game.setSpeed(Game.LEVEL_HARD);
-        game.setWrapSnakeOnBoundaries(true);
     }
 
     @Override
@@ -49,13 +47,9 @@ public class GamePresenter implements GameContract.Presenter, Observer {
     }
 
     @Override
-    public void setSpeed(long speed) {
-        game.setSpeed(speed);
-    }
-
-    @Override
     public void notifySnakeMoved(LinkedList<Coordinates> coordinates) {
         view.printSnake(coordinates);
+        view.printPrize();
     }
 
     @Override

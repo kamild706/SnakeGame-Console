@@ -13,12 +13,12 @@ public interface GameContract {
         void changeDirectionToBottom();
         void startGame();
         void stopGame();
-        void setSpeed(long speed);
     }
 
     interface View {
         void printSnake(LinkedList<Coordinates> coordinates);
         void printPrize(Coordinates coordinates);
+        void printPrize();
         void updateScore(int score);
         void onGameOver();
     }

@@ -5,31 +5,25 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static app.model.GameConfig.*;
+
 public class Game {
 
-    public static final int TOP_BOUNDARY = 1;
-    public static final int BOTTOM_BOUNDARY = 28;
-    public static final int RIGHT_BOUNDARY = 90;
-    public static final int LEFT_BOUNDARY = -1;
 
-    public static final long LEVEL_EASY = 800;
-    public static final long LEVEL_MEDIUM = 100;
-    public static final long LEVEL_HARD = 40;
 
     private ArrayList<Observer> observers = new ArrayList<>();
 
     private Snake snake;
     private Prize prize;
     private int score = 0;
-    private long gameInterval = LEVEL_EASY;
 
-    private boolean wrapSnakeOnBoundaries = false;
+//    private boolean wrapSnakeOnBoundaries = false;
     private boolean isGameOn = false;
     private Timer gameTimer;
 
-    public void setWrapSnakeOnBoundaries(boolean wrapSnakeOnBoundaries) {
+    /*public void setWrapSnakeOnBoundaries(boolean wrapSnakeOnBoundaries) {
         this.wrapSnakeOnBoundaries = wrapSnakeOnBoundaries;
-    }
+    }*/
 
     public void addObserver(Observer observer) {
         if (!observers.contains(observer)) {
@@ -93,14 +87,13 @@ public class Game {
                 @Override
                 public void run() {
                     snake.move();
-                    if (wrapSnakeOnBoundaries) {
+                    if (GameConfig.getInstance().isSnakeWrapsOnBoundaries()) {
                         wrapSnake();
                     }
 
                     observers.forEach(p -> p.notifySnakeMoved(snake.getBody()));
 
                     if (isCollision()) {
-                        isGameOn = false;
                         stopGame();
                         observers.forEach(Observer::notifyCollisionOccurred);
                     }
@@ -111,7 +104,7 @@ public class Game {
                         createPrize();
                     }
                 }
-            }, 0, gameInterval);
+            }, 0, GameConfig.getInstance().getGameLevel());
         }
     }
 
@@ -119,10 +112,6 @@ public class Game {
     public void stopGame() {
         gameTimer.cancel();
         isGameOn = false;
-    }
-
-    public void setSpeed(long speed) {
-        gameInterval = speed;
     }
 
 
