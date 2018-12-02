@@ -1,9 +1,14 @@
 package app.model;
 
-public class Prize {
+abstract class Prize implements Cloneable {
 
     private Coordinates coordinates;
     private int points;
+    private boolean extraLife = false;
+
+    public void setCoordinates(Coordinates coordinates) {
+        this.coordinates = coordinates;
+    }
 
     public Coordinates getCoordinates() {
         return coordinates;
@@ -13,12 +18,17 @@ public class Prize {
         return points;
     }
 
-    public Prize(int x, int y) {
-        this(x, y, 1);
-    }
-
-    public Prize(int x, int y, int points) {
-        this.coordinates = new Coordinates(x, y);
+    public Prize(int points) {
         this.points = points;
     }
+
+    public boolean isExtraLife() {
+        return extraLife;
+    }
+
+    public void setExtraLife(boolean extraLife) {
+        this.extraLife = extraLife;
+    }
+
+    abstract protected Object clone();
 }

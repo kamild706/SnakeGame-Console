@@ -66,4 +66,14 @@ public class GamePresenter implements GameContract.Presenter, Observer {
     public void notifyPrizeAcquired(int userScore) {
         view.updateScore(userScore);
     }
+
+    @Override
+    public void notifyLivesChangeOccurred(int lives) {
+        view.updateLives(lives);
+    }
+
+    @Override
+    public void notifyObstacleMoved(Coordinates coordinates) {
+        view.printObstacle(coordinates);
+    }
 }

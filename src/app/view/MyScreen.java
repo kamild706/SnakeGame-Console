@@ -40,6 +40,7 @@ public class MyScreen {
         }
 
         BACKGROUND_COLOR = new TextColor.RGB(132, 95, 35);
+//        BACKGROUND_COLOR = TextColor.ANSI.BLACK;
         TEXT_COLOR = new TextColor.RGB(255, 255, 255);
         SELECTED_BACKGROUND = new TextColor.RGB(132, 64, 35);
     }

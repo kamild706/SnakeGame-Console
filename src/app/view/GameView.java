@@ -18,6 +18,7 @@ public class GameView implements GameContract.View {
     private Coordinates tailOfSnake;
     private boolean isGameOn = false;
     private Coordinates prize;
+    private Coordinates lastObstaclePosition;
 
     private static final String snakeElement = "\u2b1b";
 
@@ -111,10 +112,28 @@ public class GameView implements GameContract.View {
         String frame = MyUtils.repeatString("=", screen.COLUMNS);
         screen.print(0, 1, frame);
         updateScore(0);
+        updateLives(2);
     }
 
     @Override
     public void updateScore(int score) {
         screen.print(screen.COLUMNS - 15, 0, "Wynik: " + score);
+    }
+
+    @Override
+    public void updateLives(int lives) {
+        screen.print(screen.COLUMNS - 25, 0, "ŻYCIA: " + lives);
+    }
+
+    @Override
+    public void printObstacle(Coordinates coordinates) {
+        if (lastObstaclePosition == null) {
+            lastObstaclePosition = coordinates.clone();
+        } else {
+            screen.print(lastObstaclePosition.getX(), lastObstaclePosition.getY(), " ", screen.BACKGROUND_COLOR);
+            lastObstaclePosition = coordinates.clone();
+        }
+        TextColor awardColor = new TextColor.RGB(0, 0, 0);
+        screen.print(coordinates.getX(), coordinates.getY(), "#", awardColor);
     }
 }

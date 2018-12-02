@@ -8,4 +8,6 @@ public interface Observer {
     void notifyPrizeCreated(Coordinates prizeCoordinates);
     void notifyCollisionOccurred();
     void notifyPrizeAcquired(int userScore);
+    void notifyLivesChangeOccurred(int lives);
+    void notifyObstacleMoved(Coordinates coordinates);
 }

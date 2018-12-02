@@ -21,5 +21,7 @@ public interface GameContract {
         void printPrize();
         void updateScore(int score);
         void onGameOver();
+        void updateLives(int lives);
+        void printObstacle(Coordinates coordinates);
     }
 }
