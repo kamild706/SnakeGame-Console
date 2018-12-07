@@ -75,6 +75,7 @@ public class GameView implements GameContract.View {
         this.prize = prize;
         TextColor awardColor = new TextColor.RGB(0, 0, 255);
         screen.print(prize.getX(), prize.getY(), "X", awardColor);
+        paintBarrier();
     }
 
     @Override
@@ -104,6 +105,11 @@ public class GameView implements GameContract.View {
         }*/
 
         isGameOn = false;
+    }
+
+    private void paintBarrier() {
+        String frame = MyUtils.repeatString("=", screen.COLUMNS);
+        screen.print(0, 1, frame);
     }
 
     private void showGameBoard() {

@@ -1,4 +1,6 @@
-package app.model;
+package app.model.obstacle;
+
+import app.model.Coordinates;
 
 public interface ObstacleInterface {
 

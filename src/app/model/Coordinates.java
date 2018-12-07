@@ -32,7 +32,7 @@ public class Coordinates {
         return new Coordinates(this.x, this.y);
     }
 
-    public void move(Direction direction) {
+    public Coordinates move(Direction direction) {
         if (direction == Direction.UP) {
             y--;
         }
@@ -45,6 +45,8 @@ public class Coordinates {
         if (direction == Direction.LEFT) {
             x--;
         }
+
+        return this;
     }
 
     @Override

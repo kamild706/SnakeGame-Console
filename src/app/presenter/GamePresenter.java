@@ -2,18 +2,25 @@ package app.presenter;
 
 import app.GameContract;
 import app.model.*;
+import app.model.game.CollisionFreeGame;
+import app.model.game.CollisionGame;
+import app.model.game.Game;
 
 import java.util.LinkedList;
 
-public class GamePresenter implements GameContract.Presenter, Observer {
+public class GamePresenter implements GameContract.Presenter {
 
     private GameContract.View view;
     private Game game;
 
     public GamePresenter(GameContract.View view) {
         this.view = view;
-        game = new Game();
-        game.addObserver(this);
+        if (GameConfig.getInstance().isSnakeWrapsOnBoundaries()) {
+            game = new CollisionFreeGame();
+        } else {
+            game = new CollisionGame();
+        }
+        game.setPresenter(this);
     }
 
     @Override
@@ -46,33 +53,27 @@ public class GamePresenter implements GameContract.Presenter, Observer {
         game.stopGame();
     }
 
-    @Override
     public void notifySnakeMoved(LinkedList<Coordinates> coordinates) {
         view.printSnake(coordinates);
         view.printPrize();
     }
 
-    @Override
     public void notifyPrizeCreated(Coordinates prizeCoordinates) {
         view.printPrize(prizeCoordinates);
     }
 
-    @Override
     public void notifyCollisionOccurred() {
         view.onGameOver();
     }
 
-    @Override
     public void notifyPrizeAcquired(int userScore) {
         view.updateScore(userScore);
     }
 
-    @Override
     public void notifyLivesChangeOccurred(int lives) {
         view.updateLives(lives);
     }
 
-    @Override
     public void notifyObstacleMoved(Coordinates coordinates) {
         view.printObstacle(coordinates);
     }

@@ -1,10 +1,21 @@
-package app.model;
+package app.model.prize;
 
-abstract class Prize implements Cloneable {
+import app.model.Coordinates;
+
+public abstract class Prize {
 
     private Coordinates coordinates;
     private int points;
     private boolean extraLife = false;
+    private boolean extraSpeed = false;
+
+    public boolean isExtraSpeed() {
+        return extraSpeed;
+    }
+
+    public void setExtraSpeed(boolean extraSpeed) {
+        this.extraSpeed = extraSpeed;
+    }
 
     public void setCoordinates(Coordinates coordinates) {
         this.coordinates = coordinates;
@@ -29,6 +40,4 @@ abstract class Prize implements Cloneable {
     public void setExtraLife(boolean extraLife) {
         this.extraLife = extraLife;
     }
-
-    abstract protected Object clone();
 }

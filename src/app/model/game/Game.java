@@ -1,18 +1,26 @@
-package app.model;
+package app.model.game;
 
+
+import app.model.*;
+import app.model.obstacle.DoubleMoveDecorator;
+import app.model.obstacle.Obstacle;
+import app.model.obstacle.ObstacleInterface;
+import app.model.prize.Prize;
+import app.model.prize.PrizeFactory;
+import app.model.snake.FasterMove;
+import app.model.snake.RegularMove;
+import app.model.snake.Snake;
+import app.presenter.GamePresenter;
 
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import static app.model.GameConfig.*;
-import static app.model.PrizeCache.*;
 
-public class Game {
+public abstract class Game {
 
-    private ArrayList<Observer> observers = new ArrayList<>();
-
-    private Snake snake;
+    protected Snake snake;
     private Prize prize;
     private ObstacleInterface obstacle;
     private int score = 0;
@@ -20,35 +28,30 @@ public class Game {
     private boolean directionChangeOccurred = false;
     private boolean isGameOn = false;
     private Timer gameTimer;
-
-
-    public void addObserver(Observer observer) {
-        if (!observers.contains(observer)) {
-            observers.add(observer);
-        }
-    }
-
-    public void removeObserver(Observer observer) {
-        observers.remove(observer);
-    }
+    private GameConfig config;
+    private GamePresenter presenter;
 
     public Game() {
-        PrizeCache.initCache();
+        config = GameConfig.getInstance();
     }
 
-    public void createPrize() {
+    public void setPresenter(GamePresenter presenter) {
+        this.presenter = presenter;
+    }
+
+    private void createPrize() {
         double random = Math.random();
         if (random < 0.5) {
-            prize = (Prize) PrizeCache.getPrize(SMALL).clone();
+            prize = PrizeFactory.getSmallPrize();
         } else if (random < 0.8) {
-            prize = (Prize) PrizeCache.getPrize(MEDIUM).clone();
+            prize = PrizeFactory.getMediumPrize();
         } else {
-            prize = (Prize) PrizeCache.getPrize(BIG).clone();
+            prize = PrizeFactory.getBigPrize();
         }
 
         prize.setCoordinates(getRandomCoordinates());
 
-        observers.forEach(p -> p.notifyPrizeCreated(prize.getCoordinates()));
+        presenter.notifyPrizeCreated(prize.getCoordinates());
     }
 
     private void createObstacle() {
@@ -62,15 +65,6 @@ public class Game {
     private Coordinates getRandomCoordinates() {
         return new Coordinates((int) (Math.random() * RIGHT_BOUNDARY + LEFT_BOUNDARY),
                 (int) (Math.random() * (BOTTOM_BOUNDARY - TOP_BOUNDARY - 2)) + TOP_BOUNDARY + 1);
-    }
-
-    private void wrapSnake() {
-        Coordinates head = snake.getHead();
-
-        if (head.getX() == LEFT_BOUNDARY) head.setX(RIGHT_BOUNDARY - 1);
-        if (head.getX() == RIGHT_BOUNDARY) head.setX(LEFT_BOUNDARY + 1);
-        if (head.getY() == TOP_BOUNDARY) head.setY(BOTTOM_BOUNDARY - 1);
-        if (head.getY() == BOTTOM_BOUNDARY) head.setY(TOP_BOUNDARY + 1);
     }
 
     private boolean isBodyCollision() {
@@ -91,14 +85,10 @@ public class Game {
     }
 
     private boolean isBoundaryCollision() {
-        Coordinates head = snake.getHead();
-
-        if (head.getX() == LEFT_BOUNDARY || head.getX() == RIGHT_BOUNDARY ||
-                head.getY() == TOP_BOUNDARY || head.getY() == BOTTOM_BOUNDARY) {
-            return true;
-        }
-        return false;
+        return checkCollision();
     }
+
+    protected abstract boolean checkCollision();
 
     private boolean isPrizeAcquired() {
         return snake.getHead().equals(prize.getCoordinates());
@@ -113,74 +103,86 @@ public class Game {
 
     public void startGame() {
         if (!isGameOn) {
+            isGameOn = true;
             snake = new Snake();
             createPrize();
             createObstacle();
-            isGameOn = true;
+
             gameTimer = new Timer();
             gameTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
                     directionChangeOccurred = false;
                     snake.move();
-                    if (GameConfig.getInstance().isSnakeWrapsOnBoundaries()) {
-                        wrapSnake();
-                    }
 
-                    observers.forEach(p -> p.notifySnakeMoved(snake.getBody()));
+                    presenter.notifySnakeMoved(snake.getBody());
 
                     if (isBoundaryCollision()) {
                         stopGame();
-                        observers.forEach(Observer::notifyCollisionOccurred);
+                        System.out.println(1);
+                        presenter.notifyCollisionOccurred();
                     }
+
                     if (isBodyCollision() || obstacle != null && isObstacleCollision()) {
                         if (snake.getLives() > 1) {
                             snake.decrementLives();
-                            observers.forEach(p -> p.notifyLivesChangeOccurred(snake.getLives()));
+                            presenter.notifyLivesChangeOccurred(snake.getLives());
                         } else {
                             stopGame();
-                            observers.forEach(Observer::notifyCollisionOccurred);
+                            System.out.println(2);
+                            presenter.notifyCollisionOccurred();
                         }
                     }
+
                     if (isPrizeAcquired()) {
                         score += prize.getPoints();
+//                        changeSnakeSpeed();
                         if (prize.isExtraLife()) {
                             snake.incrementLives();
-                            observers.forEach(p -> p.notifyLivesChangeOccurred(snake.getLives()));
+                            presenter.notifyLivesChangeOccurred(snake.getLives());
                         }
 
-                        observers.forEach(p -> p.notifyPrizeAcquired(score));
+                        presenter.notifyPrizeAcquired(score);
                         snake.extendSnake();
                         createPrize();
                     }
-                    if (obstacle != null && isObstacleOutOfScreen()) {
-                        obstacle = null;
-                        if (Math.random() < 0.7) {
-                            createObstacle();
-                        }
-                    }
 
-                    if (obstacle == null && Math.random() < 0.7) {
-                        createObstacle();
-                    }
-
-                    if (obstacle != null) {
-                        obstacle.move(Math.random() < 0.7 ? 0 : 1);
-                        observers.forEach(p -> p.notifyObstacleMoved(obstacle.getCoordinates()));
-                    }
-                    System.out.println(obstacle == null);
+                    handleObstacle();
                 }
-            }, 0, GameConfig.getInstance().getGameLevel());
+            }, 0, config.getGameLevel());
+        }
+    }
+
+    private void changeSnakeSpeed() {
+        if (prize.isExtraSpeed()) {
+            snake.setMoveStrategy(new FasterMove());
+        } else {
+            snake.setMoveStrategy(new RegularMove());
+        }
+    }
+
+    private void handleObstacle() {
+        if (obstacle != null && isObstacleOutOfScreen()) {
+            obstacle = null;
+            if (Math.random() < 0.7) {
+                createObstacle();
+            }
+        }
+
+        if (obstacle == null && Math.random() < 0.7) {
+            createObstacle();
+        }
+
+        if (obstacle != null) {
+            obstacle.move(Math.random() < 0.7 ? 0 : 1);
+            presenter.notifyObstacleMoved(obstacle.getCoordinates());
         }
     }
 
     private boolean isObstacleOutOfScreen() {
         Coordinates head = obstacle.getCoordinates();
-        if (head.getX() <= LEFT_BOUNDARY || head.getX() >= RIGHT_BOUNDARY ||
-                head.getY() <= TOP_BOUNDARY || head.getY() >= BOTTOM_BOUNDARY) {
-            return true;
-        }
-        return false;
+        return head.getX() <= LEFT_BOUNDARY || head.getX() >= RIGHT_BOUNDARY ||
+                head.getY() <= TOP_BOUNDARY || head.getY() >= BOTTOM_BOUNDARY;
     }
 
     public void stopGame() {

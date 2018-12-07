@@ -1,4 +1,4 @@
-package app.model;
+package app.model.obstacle;
 
 public class DoubleMoveDecorator extends ObstacleDecorator {
 

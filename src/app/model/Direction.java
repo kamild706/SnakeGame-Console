@@ -9,7 +9,7 @@ public enum Direction {
         this.value = value;
     }
 
-    boolean isContradictoryTo(Direction direction) {
+    public boolean isContradictoryTo(Direction direction) {
         return this.value == direction.value;
     }
 }
