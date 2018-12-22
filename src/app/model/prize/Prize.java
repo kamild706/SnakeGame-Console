@@ -1,43 +1,54 @@
 package app.model.prize;
 
 import app.model.Coordinates;
+import com.googlecode.lanterna.TextColor;
+
+import static app.model.GameConfig.*;
+import static app.model.GameConfig.TOP_BOUNDARY;
 
 public abstract class Prize {
 
     private Coordinates coordinates;
-    private int points;
     private boolean extraLife = false;
-    private boolean extraSpeed = false;
+    private String shape;
+    private TextColor color;
 
-    public boolean isExtraSpeed() {
-        return extraSpeed;
+    Prize() {
+        setCoordinates();
     }
 
-    public void setExtraSpeed(boolean extraSpeed) {
-        this.extraSpeed = extraSpeed;
+    public TextColor getColor() {
+        return color;
     }
 
-    public void setCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
+    void setColor(TextColor color) {
+        this.color = color;
+    }
+
+    public String getShape() {
+        return shape;
+    }
+
+    void setShape(String shape) {
+        this.shape = shape;
     }
 
     public Coordinates getCoordinates() {
         return coordinates;
     }
 
-    public int getPoints() {
-        return points;
-    }
-
-    public Prize(int points) {
-        this.points = points;
+    private void setCoordinates() {
+        coordinates = new Coordinates((int) (Math.random() * RIGHT_BOUNDARY + LEFT_BOUNDARY),
+                (int) (Math.random() * (BOTTOM_BOUNDARY - TOP_BOUNDARY - 2)) + TOP_BOUNDARY + 1);
     }
 
     public boolean isExtraLife() {
         return extraLife;
     }
 
-    public void setExtraLife(boolean extraLife) {
+    void setExtraLife(boolean extraLife) {
         this.extraLife = extraLife;
     }
+
+    public abstract int getPoints();
 }

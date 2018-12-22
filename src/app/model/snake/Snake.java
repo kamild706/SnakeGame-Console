@@ -57,6 +57,11 @@ public class Snake {
     }
 
     public void move() {
+        /*try {
+            Thread.sleep(400);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
         moveStrategy.move(body, headedTo);
     }
 }

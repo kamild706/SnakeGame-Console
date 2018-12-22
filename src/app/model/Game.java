@@ -1,4 +1,4 @@
-package app.model.game;
+package app.model;
 
 
 import app.model.*;
@@ -18,7 +18,7 @@ import java.util.TimerTask;
 
 import static app.model.GameConfig.*;
 
-public abstract class Game {
+public class Game {
 
     protected Snake snake;
     private Prize prize;
@@ -85,10 +85,11 @@ public abstract class Game {
     }
 
     private boolean isBoundaryCollision() {
-        return checkCollision();
-    }
+        Coordinates head = snake.getHead();
 
-    protected abstract boolean checkCollision();
+        return head.getX() <= GameConfig.LEFT_BOUNDARY || head.getX() >= GameConfig.RIGHT_BOUNDARY ||
+                head.getY() <= GameConfig.TOP_BOUNDARY || head.getY() >= GameConfig.BOTTOM_BOUNDARY;
+    }
 
     private boolean isPrizeAcquired() {
         return snake.getHead().equals(prize.getCoordinates());
@@ -99,6 +100,17 @@ public abstract class Game {
             snake.changeDirection(direction);
             directionChangeOccurred = true;
         }
+    }
+
+    private void wrapSnake() {
+        if (!config.isSnakeWrapsOnBoundaries()) return;
+
+        Coordinates head = snake.getHead();
+
+        if (head.getX() == LEFT_BOUNDARY) head.setX(RIGHT_BOUNDARY - 1);
+        if (head.getX() == RIGHT_BOUNDARY) head.setX(LEFT_BOUNDARY + 1);
+        if (head.getY() == TOP_BOUNDARY) head.setY(BOTTOM_BOUNDARY - 1);
+        if (head.getY() == BOTTOM_BOUNDARY) head.setY(TOP_BOUNDARY + 1);
     }
 
     public void startGame() {
@@ -116,7 +128,7 @@ public abstract class Game {
                     snake.move();
 
                     presenter.notifySnakeMoved(snake.getBody());
-
+                    wrapSnake();
                     if (isBoundaryCollision()) {
                         stopGame();
                         System.out.println(1);
@@ -150,14 +162,6 @@ public abstract class Game {
                     handleObstacle();
                 }
             }, 0, config.getGameLevel());
-        }
-    }
-
-    private void changeSnakeSpeed() {
-        if (prize.isExtraSpeed()) {
-            snake.setMoveStrategy(new FasterMove());
-        } else {
-            snake.setMoveStrategy(new RegularMove());
         }
     }
 

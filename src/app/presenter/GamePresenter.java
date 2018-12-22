@@ -2,9 +2,7 @@ package app.presenter;
 
 import app.GameContract;
 import app.model.*;
-import app.model.game.CollisionFreeGame;
-import app.model.game.CollisionGame;
-import app.model.game.Game;
+import app.model.Game;
 
 import java.util.LinkedList;
 
@@ -15,11 +13,7 @@ public class GamePresenter implements GameContract.Presenter {
 
     public GamePresenter(GameContract.View view) {
         this.view = view;
-        if (GameConfig.getInstance().isSnakeWrapsOnBoundaries()) {
-            game = new CollisionFreeGame();
-        } else {
-            game = new CollisionGame();
-        }
+        game = new Game();
         game.setPresenter(this);
     }
 

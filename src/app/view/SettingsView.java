@@ -1,14 +1,13 @@
 package app.view;
 
-import app.SettingsContract;
-import app.presenter.SettingsPresenter;
+import app.model.GameConfig;
 
 
-public class SettingsView implements SettingsContract.View {
+public class SettingsView {
 
-    private SettingsContract.Presenter presenter;
     private MyScreen screen;
     private boolean exitRequested = false;
+    private GameConfig config;
 
     private final int GAME_LEVEL = 0;
     private final int BOUNDARY_COLLISION = 1;
@@ -23,10 +22,10 @@ public class SettingsView implements SettingsContract.View {
     private final int COLLISION_NO = 1;
 
 
-    public SettingsView(MyScreen screen) {
+    SettingsView(MyScreen screen) {
         this.screen = screen;
-        this.presenter = new SettingsPresenter(this);
 
+        config = GameConfig.getInstance();
         while (!exitRequested)
             showMainMenu();
     }
@@ -77,22 +76,22 @@ public class SettingsView implements SettingsContract.View {
 
     private void handleCollisionChoice(int position) {
         if (position == COLLISION_YES) {
-            presenter.setCollisionWithBoundaries(true);
+            config.setSnakeWrapsOnBoundaries(false);
         }
         if (position == COLLISION_NO) {
-            presenter.setCollisionWithBoundaries(false);
+            config.setSnakeWrapsOnBoundaries(true);
         }
     }
 
     private void handleGameLevelChoice(int position) {
         if (position == LEVEL_EASY) {
-            presenter.setGameLevelEasy();
+            config.setGameLevel(LEVEL_EASY);
         }
         if (position == LEVEL_MEDIUM) {
-            presenter.setGameLevelMedium();
+            config.setGameLevel(LEVEL_MEDIUM);
         }
         if (position == LEVEL_HARD) {
-            presenter.setGameLevelHard();
+            config.setGameLevel(LEVEL_HARD);
         }
     }
 }
