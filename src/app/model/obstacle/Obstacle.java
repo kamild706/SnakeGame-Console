@@ -2,7 +2,7 @@ package app.model.obstacle;
 
 import app.model.Coordinates;
 
-public class Obstacle implements ObstacleInterface {
+public class Obstacle implements IObstacle {
 
     private Coordinates coordinates;
 

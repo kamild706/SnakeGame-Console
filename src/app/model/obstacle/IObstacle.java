@@ -2,7 +2,7 @@ package app.model.obstacle;
 
 import app.model.Coordinates;
 
-public interface ObstacleInterface {
+public interface IObstacle {
 
     void move(int distance);
     Coordinates getCoordinates();

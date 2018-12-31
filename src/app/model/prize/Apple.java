@@ -2,12 +2,12 @@ package app.model.prize;
 
 import com.googlecode.lanterna.TextColor;
 
-public class BigPrize extends Prize {
+public class Apple extends Prize {
 
     private int points;
 
-    BigPrize() {
-        points = 5;
+    Apple() {
+        points = 10;
         setExtraLife(false);
         setShape("#");
         setColor(new TextColor.RGB(255, 255, 255));

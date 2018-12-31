@@ -1,8 +1,10 @@
 package app.view;
 
-import app.GameContract;
 import app.model.Coordinates;
-import app.presenter.GamePresenter;
+import app.model.Direction;
+import app.model.Game;
+import app.model.prize.Prize;
+import app.model.snake.Snake;
 import app.utils.MyUtils;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
@@ -11,27 +13,28 @@ import com.googlecode.lanterna.input.KeyType;
 import java.io.IOException;
 import java.util.LinkedList;
 
-public class GameView implements GameContract.View {
+public class GameView {
 
     private MyScreen screen;
-    private GameContract.Presenter presenter;
+//    private GameContract.Presenter presenter;
     private Coordinates tailOfSnake;
     private boolean isGameOn = false;
-    private Coordinates prize;
+    private Prize prize;
     private Coordinates lastObstaclePosition;
+    private Game game;
 
     private static final String snakeElement = "\u2b1b";
 
     public GameView(MyScreen screen) {
         this.screen = screen;
-        presenter = new GamePresenter(this);
+        this.game = new Game(this);
+//        presenter = new GamePresenter(this);
         start();
     }
 
     private void start() {
         showGameBoard();
-        presenter.startGame();
-
+        game.startGame();
         isGameOn = true;
 
         while (isGameOn) {
@@ -39,16 +42,15 @@ public class GameView implements GameContract.View {
                 KeyStroke keyStroke = screen.pollInput();
                 if (keyStroke != null) {
                     if (keyStroke.getKeyType() == KeyType.ArrowDown) {
-                        presenter.changeDirectionToBottom();
+                        game.changeSnakeDirectionTo(Direction.DOWN);
                     } else if (keyStroke.getKeyType() == KeyType.ArrowUp) {
-                        presenter.changeDirectionToTop();
+                        game.changeSnakeDirectionTo(Direction.UP);
                     } else if (keyStroke.getKeyType() == KeyType.ArrowLeft) {
-                        presenter.changeDirectionToLeft();
+                        game.changeSnakeDirectionTo(Direction.LEFT);
                     } else if (keyStroke.getKeyType() == KeyType.ArrowRight) {
-                        presenter.changeDirectionToRight();
+                        game.changeSnakeDirectionTo(Direction.RIGHT);
                     }
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
                 return;
@@ -56,29 +58,27 @@ public class GameView implements GameContract.View {
         }
     }
 
-    @Override
-    public void printSnake(LinkedList<Coordinates> snakeBody) {
-        TextColor snakeColor = new TextColor.RGB(0, 77, 178);
+    public void printSnake(Snake snake) {
+        LinkedList<Coordinates> snakeBody = snake.getBody();
         if (tailOfSnake != null)
             screen.print(tailOfSnake.getX(), tailOfSnake.getY(), " ");
-        snakeBody.forEach(p -> screen.print(p.getX(), p.getY(), snakeElement, snakeColor));
+        snakeBody.forEach(p -> screen.print(p.getX(), p.getY(), snake.getShape(), snake.getColor()));
         tailOfSnake = snakeBody.getLast();
     }
 
-    @Override
     public void printPrize() {
         printPrize(prize);
     }
 
-    @Override
-    public void printPrize(Coordinates prize) {
+    public void printPrize(Prize prize) {
         this.prize = prize;
-        TextColor awardColor = new TextColor.RGB(0, 0, 255);
-        screen.print(prize.getX(), prize.getY(), "X", awardColor);
+        TextColor awardColor = prize.getColor();
+        Coordinates position = prize.getCoordinates();
+        String shape = prize.getShape();
+        screen.print(position.getX(), position.getY(), shape, awardColor);
         paintBarrier();
     }
 
-    @Override
     public void onGameOver() {
         int leftMargin = 23;
         int topMargin = 3;
@@ -117,21 +117,18 @@ public class GameView implements GameContract.View {
 
         String frame = MyUtils.repeatString("=", screen.COLUMNS);
         screen.print(0, 1, frame);
-        updateScore(0);
-        updateLives(2);
+        /*updateScore(0);
+        updateLives(2);*/
     }
 
-    @Override
     public void updateScore(int score) {
         screen.print(screen.COLUMNS - 15, 0, "Wynik: " + score);
     }
 
-    @Override
     public void updateLives(int lives) {
         screen.print(screen.COLUMNS - 25, 0, "ŻYCIA: " + lives);
     }
 
-    @Override
     public void printObstacle(Coordinates coordinates) {
         if (lastObstaclePosition == null) {
             lastObstaclePosition = coordinates.clone();

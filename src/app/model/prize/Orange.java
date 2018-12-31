@@ -2,14 +2,14 @@ package app.model.prize;
 
 import com.googlecode.lanterna.TextColor;
 
-public class MediumPrize extends Prize {
+class Orange extends Prize {
 
     private int points;
 
-    MediumPrize() {
-        points = 3;
+    Orange() {
+        points = 2;
         setExtraLife(false);
-        setShape("$");
+        setShape("@");
         setColor(new TextColor.RGB(255, 255, 255));
     }
 

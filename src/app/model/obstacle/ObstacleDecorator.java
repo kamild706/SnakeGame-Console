@@ -2,11 +2,11 @@ package app.model.obstacle;
 
 import app.model.Coordinates;
 
-public abstract class ObstacleDecorator implements ObstacleInterface {
+public abstract class ObstacleDecorator implements IObstacle {
 
-    private ObstacleInterface obstacle;
+    private IObstacle obstacle;
 
-    public ObstacleDecorator(ObstacleInterface obstacle) {
+    public ObstacleDecorator(IObstacle obstacle) {
         this.obstacle = obstacle;
     }
 

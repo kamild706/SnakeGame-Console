@@ -2,7 +2,6 @@ package app.view;
 
 import app.model.GameConfig;
 
-
 public class SettingsView {
 
     private MyScreen screen;
@@ -85,13 +84,13 @@ public class SettingsView {
 
     private void handleGameLevelChoice(int position) {
         if (position == LEVEL_EASY) {
-            config.setGameLevel(LEVEL_EASY);
+            config.setGameLevel(GameConfig.LEVEL_EASY);
         }
         if (position == LEVEL_MEDIUM) {
-            config.setGameLevel(LEVEL_MEDIUM);
+            config.setGameLevel(GameConfig.LEVEL_MEDIUM);
         }
         if (position == LEVEL_HARD) {
-            config.setGameLevel(LEVEL_HARD);
+            config.setGameLevel(GameConfig.LEVEL_HARD);
         }
     }
 }

@@ -2,18 +2,33 @@ package app.model.snake;
 
 import app.model.Coordinates;
 import app.model.Direction;
+import app.model.prize.Prize;
+import com.googlecode.lanterna.TextColor;
 
 import java.util.LinkedList;
 
 public class Snake {
 
+    private final String shape = "\u2b1b";
+    private final TextColor color = new TextColor.RGB(0, 77, 178);
+
     private LinkedList<Coordinates> body;
     private Direction headedTo;
-    private int lives = 2;
-    private MoveStrategy moveStrategy;
+    private int lives = 5;
+    private int score = 0;
+    private SnakeState snakeState;
 
-    public void setMoveStrategy(MoveStrategy moveStrategy) {
-        this.moveStrategy = moveStrategy;
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void setSnakeState(SnakeState snakeState) {
+        this.snakeState = snakeState;
     }
 
     public LinkedList<Coordinates> getBody() {
@@ -24,8 +39,20 @@ public class Snake {
         return body.getFirst();
     }
 
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
     public int getLives() {
         return lives;
+    }
+
+    public String getShape() {
+        return shape;
+    }
+
+    public TextColor getColor() {
+        return color;
     }
 
     public void incrementLives() {
@@ -43,7 +70,7 @@ public class Snake {
         body.add(new Coordinates(12, 10));
         body.add(new Coordinates(11, 10));
 
-        moveStrategy = new RegularMove();
+        snakeState = new HealthySnake();
     }
 
     public void extendSnake() {
@@ -56,12 +83,30 @@ public class Snake {
         }
     }
 
+    public boolean isBodyCollision() {
+        Coordinates head = body.getFirst();
+
+        for (int i = 1; i < body.size(); i++) {
+            if (body.get(i).equals(head)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Direction getDirection() {
+        return headedTo;
+    }
+
+    public void consumePrize(Prize prize) {
+        snakeState.consumePrize(this, prize);
+    }
+
     public void move() {
-        /*try {
-            Thread.sleep(400);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
-        moveStrategy.move(body, headedTo);
+        snakeState.move(this);
+    }
+
+    public void handleCollision() {
+        snakeState.handleCollision(this);
     }
 }

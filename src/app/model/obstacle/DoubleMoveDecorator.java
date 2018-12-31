@@ -2,7 +2,7 @@ package app.model.obstacle;
 
 public class DoubleMoveDecorator extends ObstacleDecorator {
 
-    public DoubleMoveDecorator(ObstacleInterface obstacleInterface) {
+    public DoubleMoveDecorator(IObstacle obstacleInterface) {
         super(obstacleInterface);
     }
 

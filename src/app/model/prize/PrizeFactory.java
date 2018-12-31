@@ -2,19 +2,19 @@ package app.model.prize;
 
 public class PrizeFactory {
 
-    public static Prize getSmallPrize() {
-        Prize prize = new SmallPrize();
+    public static Prize createOrange() {
+        Prize prize = new Orange();
         return prize;
     }
 
-    public static Prize getMediumPrize() {
-        Prize prize = new MediumPrize();
-        prize.setExtraLife(Math.random() > 0.95);
+    public static Prize createBanana() {
+        Prize prize = new Banana();
+        prize.setExtraLife(Math.random() > 0.75);
         return prize;
     }
 
-    public static Prize getBigPrize() {
-        Prize prize = new BigPrize();
+    public static Prize createApple() {
+        Prize prize = new Apple();
         prize.setExtraLife(Math.random() > 0.65);
         return prize;
     }
