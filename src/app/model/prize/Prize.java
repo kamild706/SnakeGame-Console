@@ -3,6 +3,8 @@ package app.model.prize;
 import app.model.Coordinates;
 import com.googlecode.lanterna.TextColor;
 
+import java.util.Objects;
+
 import static app.model.GameConfig.*;
 import static app.model.GameConfig.TOP_BOUNDARY;
 
@@ -51,4 +53,17 @@ public abstract class Prize {
     }
 
     public abstract int getPoints();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Prize prize = (Prize) o;
+        return Objects.equals(coordinates, prize.coordinates);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(coordinates, extraLife, shape, color);
+    }
 }

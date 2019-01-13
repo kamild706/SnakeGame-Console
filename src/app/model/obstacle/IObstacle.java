@@ -4,6 +4,7 @@ import app.model.Coordinates;
 
 public interface IObstacle {
 
-    void move(int distance);
+    void move(Coordinates distance);
     Coordinates getCoordinates();
+    double getDamagingPower();
 }

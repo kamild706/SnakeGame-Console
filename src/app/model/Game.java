@@ -1,30 +1,33 @@
 package app.model;
 
 
-import app.model.obstacle.DoubleMoveDecorator;
+import app.model.obstacle.DoubleSpeed;
 import app.model.obstacle.Obstacle;
 import app.model.obstacle.IObstacle;
+import app.model.obstacle.Poison;
 import app.model.prize.Prize;
 import app.model.prize.PrizeFactory;
 import app.model.snake.Snake;
+import app.utils.MyUtils;
 import app.view.GameView;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import static app.model.GameConfig.*;
 
 public class Game {
 
     private Snake snake;
-    private Prize prize;
+    private Map<Coordinates, Prize> prizes;
     private IObstacle obstacle;
 
     private boolean directionChangeOccurred = false;
     private boolean isGameOn = false;
+    private boolean initNewState = true;
     private Timer gameTimer;
     private GameConfig config;
     private GameView view;
+    private int counter = 0;
 
     public Game(GameView view) {
         this.view = view;
@@ -33,6 +36,7 @@ public class Game {
 
     private void createPrize() {
         double random = Math.random();
+        Prize prize;
         if (random < 0.5) {
             prize = PrizeFactory.createOrange();
         } else if (random < 0.8) {
@@ -40,14 +44,18 @@ public class Game {
         } else {
             prize = PrizeFactory.createApple();
         }
-        view.printPrize(prize);
+        prizes.put(prize.getCoordinates(), prize);
     }
 
     private void createObstacle() {
         obstacle = new Obstacle(getRandomCoordinates());
         double random = Math.random();
-        if (random < 0.7) {
-            obstacle = new DoubleMoveDecorator(obstacle);
+        if (random < 0.25) {
+            obstacle = new DoubleSpeed(obstacle);
+        } else if (random < 0.5) {
+            obstacle = new Poison(new DoubleSpeed(obstacle));
+        } else if (random < 0.75) {
+            obstacle = new Poison(obstacle);
         }
     }
 
@@ -70,7 +78,8 @@ public class Game {
     }
 
     private boolean isPrizeAcquired() {
-        return snake.getHead().equals(prize.getCoordinates());
+        Coordinates head = snake.getHead();
+        return prizes.containsKey(head);
     }
 
     public void changeSnakeDirectionTo(Direction direction) {
@@ -92,63 +101,67 @@ public class Game {
     }
 
     public void startGame() {
-        if (!isGameOn) {
-            isGameOn = true;
+        isGameOn = true;
+        if (initNewState) {
+            initNewState = false;
             snake = new Snake();
-            view.updateLives(snake.getLives());
-            view.updateScore(snake.getScore());
+            view.onSnakeCreated(snake);
 
+            prizes = new HashMap<>();
             createPrize();
+            createPrize();
+            createPrize();
+            view.onPrizesInitialized(prizes);
+
             createObstacle();
-
-            gameTimer = new Timer();
-            gameTimer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    directionChangeOccurred = false;
-                    snake.move();
-
-                    view.printSnake(snake);
-                    view.printPrize();
-
-                    wrapSnake();
-                    if (isBoundaryCollision()) {
-                        stopGame();
-                        System.out.println("Boundary collision");
-                        view.onGameOver();
-                    }
-
-                    if (snake.isBodyCollision() || obstacle != null && isObstacleCollision()) {
-                        if (snake.getLives() > 1) {
-                            snake.handleCollision();
-                            view.updateLives(snake.getLives());
-                        } else {
-                            stopGame();
-                            System.out.println("Collision with body or obstacle and 0 lives");
-                            view.onGameOver();
-                        }
-                    }
-
-                    if (isPrizeAcquired()) {
-                        snake.consumePrize(prize);
-                        view.updateLives(snake.getLives());
-                        view.updateScore(snake.getScore());
-                        snake.extendSnake();
-                        createPrize();
-                    }
-
-                    handleObstacle();
-                }
-            }, 0, config.getGameLevel());
         }
+        gameTimer = new Timer();
+        gameTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                directionChangeOccurred = false;
+                snake.move();
+
+                view.onSnakeMoved();
+
+                wrapSnake();
+                if (isBoundaryCollision()) {
+                    stopGame();
+                }
+
+                if (snake.isBodyCollision() || obstacle != null && isObstacleCollision()) {
+                    if (snake.getLives() > 1) {
+                        if (snake.isBodyCollision())
+                            snake.handleCollision(null);
+                        else
+                            snake.handleCollision(obstacle);
+                        view.onSnakeLivesChanged();
+                        view.onSnakeStateChangePossibility();
+                    } else {
+                        stopGame();
+                    }
+                }
+
+                if (isPrizeAcquired()) {
+                    Prize prize = prizes.get(snake.getHead());
+                    prizes.remove(prize.getCoordinates());
+                    snake.consumePrize(prize);
+                    snake.extendSnake();
+
+                    view.onSnakeLivesChanged();
+                    view.onSnakeScoreChanged();
+                    view.onSnakeStateChangePossibility();
+                    createPrize();
+                }
+
+                handleObstacle();
+            }
+        }, 0, config.getGameLevel());
     }
 
     private void handleObstacle() {
         if (obstacle != null && isObstacleOutOfScreen()) {
             obstacle = null;
-            if (Math.random() < 0.3) {
-                createObstacle();
-            }
         }
 
         if (obstacle == null && Math.random() < 0.3) {
@@ -156,8 +169,16 @@ public class Game {
         }
 
         if (obstacle != null) {
-            obstacle.move(Math.random() < 0.7 ? 0 : 1);
-            view.printObstacle(obstacle.getCoordinates());
+            Coordinates distance = new Coordinates(
+                    MyUtils.getRandomNumberInRange(0, 2),
+                    MyUtils.getRandomNumberInRange(0, 2));
+
+            counter++;
+            if (counter == 4) {
+                counter = 0;
+                obstacle.move(distance);
+            }
+            view.onObstacleMoved(obstacle);
         }
     }
 
@@ -170,5 +191,15 @@ public class Game {
     public void stopGame() {
         gameTimer.cancel();
         isGameOn = false;
+        view.onGameOver();
+    }
+
+    public void pauseOrResume() {
+        if (isGameOn) {
+            gameTimer.cancel();
+            isGameOn = false;
+        } else {
+            startGame();
+        }
     }
 }

@@ -39,8 +39,8 @@ public class MyScreen {
             System.exit(1);
         }
 
-        BACKGROUND_COLOR = new TextColor.RGB(132, 95, 35);
-//        BACKGROUND_COLOR = TextColor.ANSI.BLACK;
+        BACKGROUND_COLOR = new TextColor.RGB(48, 66, 71);
+//        BACKGROUND_COLOR = new TextColor.RGB(132, 95, 35);
         TEXT_COLOR = new TextColor.RGB(255, 255, 255);
         SELECTED_BACKGROUND = new TextColor.RGB(132, 64, 35);
     }

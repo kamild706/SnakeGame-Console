@@ -2,6 +2,7 @@ package app.model.snake;
 
 import app.model.Coordinates;
 import app.model.Direction;
+import app.model.obstacle.IObstacle;
 import app.model.prize.Prize;
 import com.googlecode.lanterna.TextColor;
 
@@ -10,7 +11,7 @@ import java.util.LinkedList;
 public class Snake {
 
     private final String shape = "\u2b1b";
-    private final TextColor color = new TextColor.RGB(0, 77, 178);
+    private final TextColor color = new TextColor.RGB(178, 87, 0);
 
     private LinkedList<Coordinates> body;
     private Direction headedTo;
@@ -25,6 +26,10 @@ public class Snake {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public SnakeState getSnakeState() {
+        return snakeState;
     }
 
     public void setSnakeState(SnakeState snakeState) {
@@ -57,10 +62,6 @@ public class Snake {
 
     public void incrementLives() {
         lives++;
-    }
-
-    public void decrementLives() {
-        lives--;
     }
 
     public Snake() {
@@ -106,7 +107,7 @@ public class Snake {
         snakeState.move(this);
     }
 
-    public void handleCollision() {
-        snakeState.handleCollision(this);
+    public void handleCollision(IObstacle obstacle) {
+        snakeState.handleCollision(this, obstacle);
     }
 }

@@ -7,9 +7,9 @@ public class GameConfig {
     public static final int RIGHT_BOUNDARY = 90;
     public static final int LEFT_BOUNDARY = -1;
 
-    public static final long LEVEL_EASY = 700;
-    public static final long LEVEL_MEDIUM = 90;
-    public static final long LEVEL_HARD = 35;
+    public static final long LEVEL_EASY = 350;
+    public static final long LEVEL_MEDIUM = 130;
+    public static final long LEVEL_HARD = 50;
 
     private long gameLevel;
     private boolean snakeWrapsOnBoundaries;

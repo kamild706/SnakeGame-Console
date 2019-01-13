@@ -11,12 +11,17 @@ public abstract class ObstacleDecorator implements IObstacle {
     }
 
     @Override
-    public void move(int distance) {
+    public void move(Coordinates distance) {
         obstacle.move(distance);
     }
 
     @Override
     public Coordinates getCoordinates() {
         return obstacle.getCoordinates();
+    }
+
+    @Override
+    public double getDamagingPower() {
+        return obstacle.getDamagingPower();
     }
 }

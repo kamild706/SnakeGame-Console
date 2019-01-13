@@ -6,10 +6,17 @@ import app.model.prize.Prize;
 
 import java.util.LinkedList;
 
-public class HealthySnake implements SnakeState {
+public class PoisonedSnake implements SnakeState {
+
+    private int collectedPrizes = 0;
 
     @Override
     public void move(Snake snake) {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         LinkedList<Coordinates> body = snake.getBody();
         body.removeLast();
         Coordinates head = body.getFirst().clone();
@@ -19,27 +26,23 @@ public class HealthySnake implements SnakeState {
 
     @Override
     public void consumePrize(Snake snake, Prize prize) {
-        snake.setScore(snake.getScore() + prize.getPoints());
-        if (prize.isExtraLife()) {
-            snake.incrementLives();
+        collectedPrizes++;
+        if (collectedPrizes == 3) {
+            if (snake.getLives() >= 5) {
+                snake.setSnakeState(new HealthySnake());
+            } else {
+                snake.setSnakeState(new WeakenedSnake());
+            }
         }
     }
 
     @Override
     public void handleCollision(Snake snake, IObstacle obstacle) {
-        if (Math.random() < 0.95) {
-            snake.setLives(snake.getLives() - 1);
-            if (snake.getLives() < 5) {
-                snake.setSnakeState(new WeakenedSnake());
-            }
-        }
-        if (obstacle != null && obstacle.getDamagingPower() > 1) {
-            snake.setSnakeState(new PoisonedSnake());
-        }
+        snake.setLives(snake.getLives() - 1);
     }
 
     @Override
     public String toString() {
-        return "zdrowy";
+        return "otruty";
     }
 }
