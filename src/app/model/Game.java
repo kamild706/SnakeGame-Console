@@ -1,7 +1,7 @@
 package app.model;
 
 
-import app.model.obstacle.DoubleSpeed;
+import app.model.obstacle.DoubleDistance;
 import app.model.obstacle.Obstacle;
 import app.model.obstacle.IObstacle;
 import app.model.obstacle.Poison;
@@ -51,9 +51,9 @@ public class Game {
         obstacle = new Obstacle(getRandomCoordinates());
         double random = Math.random();
         if (random < 0.25) {
-            obstacle = new DoubleSpeed(obstacle);
+            obstacle = new DoubleDistance(obstacle);
         } else if (random < 0.5) {
-            obstacle = new Poison(new DoubleSpeed(obstacle));
+            obstacle = new Poison(new DoubleDistance(obstacle));
         } else if (random < 0.75) {
             obstacle = new Poison(obstacle);
         }

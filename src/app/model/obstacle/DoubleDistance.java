@@ -2,9 +2,9 @@ package app.model.obstacle;
 
 import app.model.Coordinates;
 
-public class DoubleSpeed extends ObstacleDecorator {
+public class DoubleDistance extends ObstacleDecorator {
 
-    public DoubleSpeed(IObstacle obstacleInterface) {
+    public DoubleDistance(IObstacle obstacleInterface) {
         super(obstacleInterface);
     }
 
